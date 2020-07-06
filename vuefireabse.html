@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firebase Authentication</title>
+    <script src="https://www.gstatic.com/firebasejs/4.13.0/firebase.js"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <!-- First include jquery js -->
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue-tel-input"></script>
+</head>
+<body>
+
+<div id="app">
+    <div v-if="signingIn === false">
+        <div class="container d-flex text-center">
+            <div class="col-sm-6 col-sm-offset-2" ><!-- col -->
+                <h2><h1>Enter Phone Number</h1></h2>
+                <p class="desc">Please enter your phone number where <br>
+                    you receive a 6-digit confirmation code via SMS</p>
+                <br><br><br>
+                <div class="row align-items-center">
+                    <div class="col-4">
+                        <vue-tel-input v-model="phone" v-bind="bindProps" @validate="getCountry"></vue-tel-input>
+                    </div>
+                </div>
+                <br><br>
+                <div>
+                    <button id="sigin-in-button" @click="sendOtp">Get OTP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-else>
+        <div class="container d-flex text-center">
+            <div class="row">
+                <div class="col-sm-6 col-sm-offset-2" ><!-- col -->
+                    <h2><h1>Enter Verification Code</h1></h2>
+                    <p class="desc">We’ve sent a code to (+{{ }}) {{ phNo }}.<br>
+                        Enter the code to verify your phone number.</p>
+                    <br><br><br>
+                    <label><span class="normal">Your </span>confirmation code</label>
+<!--                    <div class="confirmation_code split_input large_bottom_margin" data-multi-input-code="true">-->
+<!--                        <div class="confirmation_code_group">-->
+<!--                            <div class="split_input_item input_wrapper"><input type="text" class="inline_input" maxlength="1"></div>-->
+<!--                            <div class="split_input_item input_wrapper"><input type="text" class="inline_input" maxlength="1"></div>-->
+<!--                            <div class="split_input_item input_wrapper"><input type="text" class="inline_input" maxlength="1"></div>-->
+<!--                        </div>-->
+
+<!--                        <div class="confirmation_code_span_cell">—</div>-->
+
+<!--                        <div class="confirmation_code_group">-->
+<!--                            <div class="split_input_item input_wrapper"><input type="text" class="inline_input" maxlength="1"></div>-->
+<!--                            <div class="split_input_item input_wrapper"><input type="text" class="inline_input" maxlength="1"></div>-->
+<!--                            <div class="split_input_item input_wrapper"><input type="text" class="inline_input" maxlength="1"></div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <input type="number" v-model="otp" placeholder="OTP"/>
+                    <div>
+                        <!--                    <input type="number" v-model="phNo" placeholder="Phone number"/>-->
+                        <!--                    <button id="sigin-in-button" @click="sendOtp"> Get OTP</button>-->
+<!--                        <div id="recaptcha-container"></div><br>-->
+                        <!--                    <input type="number" v-model="otp" placeholder="OTP"/>-->
+                        <button @click="verifyOtp">Verify</button>
+                        <button @click="sendOtp()">Resend OTP</button>
+                    </div>
+
+                </div><!-- endof col -->
+            </div>
+        </div>
+    </div>
+    <div id="recaptcha-container"></div><br>
+</div>
+
+<script>
+    // Your web app's Firebase configuration
+    var config = {
+        apiKey: "AIzaSyCWoGI9ikbeJkIxXKDXpNU9FwNIhwsf5qM",
+        authDomain: "credify1-7c726.firebaseapp.com",
+        databaseURL: "https://credify1-7c726.firebaseio.com",
+        projectId: "credify1-7c726",
+        storageBucket: "credify1-7c726.appspot.com",
+        messagingSenderId: "490492906457",
+        appId: "1:490492906457:web:c989ae5bb31af173cc67c8",
+        measurementId: "G-HFFXGSRVCD"
+    };
+    firebase.initializeApp(config);
+    new Vue({
+        el: '#app',
+
+        data: {
+            signingIn: false,
+            authUser: null,
+            country_code: null,
+            phone_significant: null,
+            international: null,
+            phNo: null,
+            appVerifier: null,
+            comfirmationResult: null,
+            recaptchaWidgetId: null,
+            otp: '',
+            phone: null,
+            bindProps: {
+                mode: "international",
+                defaultCountry: "VN",
+                disabledFetchingCountry: false,
+                disabled: false,
+                disabledFormatting: false,
+                placeholder: "Enter a phone number",
+                required: false,
+                enabledCountryCode: false,
+                enabledFlags: true,
+                preferredCountries: ["VN", "US"],
+                onlyCountries: [],
+                ignoredCountries: [],
+                autocomplete: "off",
+                name: "telephone",
+                maxLen: 25,
+                wrapperClasses: "",
+                inputClasses: "",
+                dropdownOptions: {
+                    disabledDialCode: false
+                },
+                inputOptions: {
+                    showDialCode: false
+                }
+            }
+        },
+
+        methods: {
+            getCountry: function ( { number, isValid, country } ) {
+                this.phone = number.significant;
+                this.country_code = country.dialCode;
+                this.international = number.international;
+                console.log( number );
+                console.log( number.significant )
+                console.log( country);
+                console.log( country.dialCode)
+            },
+            sendOtp() {
+              if ( !this.phone)
+              {
+                  return;
+              }
+              this.phNo = "+" + this.country_code + this.phone;
+              if ( this.phNo.length == 0 )
+              {
+                  alert("Invalid phone number");
+              }
+              else
+              {
+                  console.log ("phone number is");
+                  console.log ( this.phNo);
+                  this.onSignInSubmit();
+              }
+            },
+            onSignInSubmit() {
+                this.appVerifier.render().then(function(widgetId) {
+                    this.recaptchaWidgetId = widgetId;
+                });
+                if ( this.phNo.length == 0 )
+                {
+                    console.log("Invalid phone number");
+                    return;
+                }
+                const vm = this;
+                firebase.auth().signInWithPhoneNumber( this.phNo , this.appVerifier )
+                    .then( function ( confirmationResult ) {
+                        vm.comfirmationResult = confirmationResult;
+                        vm.signingIn = true;
+                        console.log( "SMS sent");
+                    }).catch( function ( error )
+                    {
+                        vm.signingIn = false;
+                        alert( "Error, ! SMS not sent")
+                        console.log(error)
+                    })
+                //this.signingIn = true;
+            },
+            verifyOtp() {
+              if ( this.otp.length != 6 )
+              {
+                  alert( "Invalid phone number or OTP");
+              }
+              else
+              {
+                  let vm = this
+                  let code = this.otp;
+                  this.comfirmationResult.confirm( code ).then( function (result ) {
+                      const user = result.user;
+                      vm.authUser = user;
+                      console.log( user );
+                      /*
+                      newly_user_data.add_argument('firebase_uid', required=False, type=str, location='form', help='firebase user id')
+newly_user_data.add_argument('first_name', required=False, type=str, location='form', help="First name.")
+newly_user_data.add_argument('last_name', required=False, type=str, location='form', help="Last name.")
+newly_user_data.add_argument('country', required=False, type=str, location='form', help="user country.")
+newly_user_data.add_argument('province', required=False, type=str, location='form', help="user province.")
+newly_user_data.add_argument('city', required=False, type=str, location='form', help="user city.")
+newly_user_data.add_argument('address_line', required=False, type=str, location='form', help="user address line.")
+newly_user_data.add_argument('postal_code', required=False, type=str, location='form', help="user postal code.")
+newly_user_data.add_argument('mob_phone', required=True, type=str, location='form', help='phone of user')
+                       */
+                      const user_req = {
+                          "account": user.phonephoneNumber,
+                          "email": "test@gmail.com",
+                          "firebase_uid" : use.uid,
+                          "first_name": "tam",
+                          "last_name": "dang",
+                          "country": "viet nam",
+                          "city" : "hcm",
+                          "province": "an giang",
+                          "address_line": "truong chin",
+                          "postall_code": "777777",
+                          "mob_phone": "0939717135"
+                      }
+                  }).catch( function (error ) {
+
+                  })
+              }
+            },
+            initReCaptcha(){
+                setTimeout(()=>{
+                    console.log( "come here baby");
+                    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                        'size': 'invisible',
+                        'callback': function(response) {
+                            // reCAPTCHA solved, allow signInWithPhoneNumber.
+                            console.log( "good to know here");
+                        }
+                    });
+                    this.appVerifier =  window.recaptchaVerifier;
+                },2000)
+            }
+        },
+        mounted() {
+            this.initReCaptcha();
+        },
+        created () {
+            firebase.auth().onAuthStateChanged(user => {
+                this.authUser = user
+                if (user) {
+                    console.log( user );
+                }
+            })
+        }
+    })
+
+</script>
+<style scope>
+    .input_wrapper{position:relative}
+    .plastic_select, input[type=url], input[type=text], input[type=tel], input[type=number], input[type=email], input[type=password], select, textarea {
+        font-size: 1.25rem;
+        line-height: normal;
+        padding: .75rem;
+        border: 1px solid #C5C5C5;
+        border-radius: .25rem;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        outline: 0;
+        color: #555459;
+        width: 100%;
+        max-width: 100%;
+        font-family: Slack-Lato,appleLogo,sans-serif;
+        margin: 0 0 .5rem;
+        -webkit-transition: box-shadow 70ms ease-out,border-color 70ms ease-out;
+        -moz-transition: box-shadow 70ms ease-out,border-color 70ms ease-out;
+        transition: box-shadow 70ms ease-out,border-color 70ms ease-out;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        box-shadow: none;
+        height: auto;
+    }
+    .no_touch .plastic_select:hover,.no_touch input:hover,.no_touch select:hover,.no_touch textarea:hover{border-color:#2780f8}
+    .focus,.plastic_select:active,.plastic_select:focus,input[type=url]:active,input[type=url]:focus,input[type=text]:active,input[type=text]:focus,input[type=number]:active,input[type=number]:focus,input[type=email]:active,input[type=email]:focus,input[type=password]:active,input[type=password]:focus,select:active,select:focus,textarea:active,textarea:focus{border-color:#2780f8;box-shadow:0 0 7px rgba(39,128,248,.15);outline-offset:0;outline:0}
+
+    .large_bottom_margin {
+        margin-bottom: 2rem!important;
+    }
+    .split_input{display:table;border-spacing:0}
+    .split_input_item{display:table-cell;border:1px solid #9e9ea6}
+    .split_input_item:not(:first-child){border-left:none}
+    .split_input_item:first-child{border-top-left-radius:5px;border-bottom-left-radius:5px}
+    .split_input_item:last-child{border-top-right-radius:5px;border-bottom-right-radius:5px}
+    .split_input_item.focused{border:1px double #2780f8;box-shadow:0 0 7px rgba(39,128,248,.3)}
+    .split_input_item input{height:5rem;text-align:center;font-size:2.5rem;border:none;background:0 0;box-shadow:none}
+    .split_input_item input:active,.split_input_item input:focus,.split_input_item input:hover{box-shadow:none}
+
+
+    .fs_split{position:absolute;overflow:hidden;width:100%;top:0;bottom:0;left:0;right:0;background-color:#e8e8e8;-webkit-transition:background-color .2s ease-out 0s;-moz-transition:background-color .2s ease-out 0s;transition:background-color .2s ease-out 0s}
+    .fs_split h1{font-size:2.625rem;line-height:3rem;font-weight:300;margin-bottom:2rem}
+    .fs_split label{margin-bottom:.5rem}
+    .fs_split .desc{font-size:1.25rem;color:#9e9ea6;margin-bottom:2rem}
+    .fs_split .email{color:#555459;font-weight:700}
+    .fs_split .header_error_message{margin:0 11%;padding:1rem 2rem;background:#fff1e1;border:none;border-left:.5rem solid #ffa940;border-radius:.25rem}
+    .fs_split .header_error_message h3{margin:0}
+    .fs_split .error_message{display:none;font-weight:700;color:#ffa940}
+    .fs_split .error input,.fs_split .error textarea{border:1px solid #ffa940;background:#fff1e1}
+    .fs_split .error input:focus,.fs_split .error textarea:focus{border-color:#fff1e1;box-shadow:0 0 7px rgba(255,185,100,.15)}
+    .fs_split .error .error_message{display:inline}
+    .confirmation_code_span_cell{display:table-cell;font-weight:700;font-size:2rem;text-align:center;padding:0 .5rem;width:2rem}
+    .confirmation_code_state_message{position:absolute;width:100%;opacity:0;-webkit-transition:opacity .2s;-moz-transition:opacity .2s;transition:opacity .2s}
+    .confirmation_code_state_message.error,.confirmation_code_state_message.processing,.confirmation_code_state_message.ratelimited{font-size:1.25rem;font-weight:700;line-height:2rem}
+    .confirmation_code_state_message.processing{color:#3aa3e3}
+    .confirmation_code_state_message.error,.confirmation_code_state_message.ratelimited{color:#ffa940}
+    .confirmation_code_state_message ts-icon:before{font-size:2.5rem}
+    .confirmation_code_state_message svg.ts_icon_spinner{height:2rem;width:2rem}
+    .confirmation_code_checker{position:relative;height:12rem;text-align:center}
+    .confirmation_code_checker[data-state=unchecked] .confirmation_code_state_message.unchecked,.confirmation_code_checker[data-state=error] .confirmation_code_state_message.error,.confirmation_code_checker[data-state=processing] .confirmation_code_state_message.processing,.confirmation_code_checker[data-state=ratelimited] .confirmation_code_state_message.ratelimited{opacity:1}
+    .large_bottom_margin {
+        margin-bottom: 2rem !important;
+    }
+</style>
+</body>
+</html>

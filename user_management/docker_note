@@ -1,0 +1,65 @@
+
+# Research
+
++ Firebase is a good choice for this challenge. Having intergated sms provider.
++ Decied to go with postgres database, Python Flask framework (backend) and vue (Frontend). Since in my recent project I worked on these technologies. Would be save time to research other approaches in 
+nodejs or golang.
+
+Day1:
+
+Writing some simple Frontend with Firebase to check the database neccessary for backend. Mostly wanted to check firebase data that we need to keep in database.
+
+Designed database for user management service
+
+Day2:
+
+Designed api view with flask
+
+Day3: 
+
+Developed Docker file,
+Automation scipting and testing.
+
+
+requirements:
+
+docker-compose version 1.25.2
+Docker version 19.03.5
+Python 3.7.6
+psql 12.3
+
+Run:
+
+navigate to :
+
+python3 -m venv venv
+
+source venv/bin/active to active the project
+
+pip install -r requirements
+
+export FLASK_APP=app.py
+export APP_SETTINGS=local
+export DATABASE_URL="postgresql+psycopg2://postgres:unDG8lDxcvyh9Jl2@localhost:5432/UserManagement"
+export FLASK_ENV=development
+
+run flask run
+
+
+Open another sell
+
+
+
+source venv/bin/active to active the project
+
+export FLASK_APP=app.py
+export APP_SETTINGS=local
+export DATABASE_URL="postgresql+psycopg2://postgres:unDG8lDxcvyh9Jl2@localhost:5432/user_mgr"
+export FLASK_ENV=development
+
+
+in order to check the postgresql
+
+psql "host=127.0.0.1 sslmode=disable dbname=user_mgr user=postgres"
+
+psql -h 127.0.0.1 -p 5432 -U postgres -d user_mgr
