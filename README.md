@@ -13,6 +13,11 @@ These instructions below will get you a copied version of the project up and run
 - virtualenv + pip
 - Oracle SDK (7 or above) - for build only
 ```
+### Database
+![erd_user_mgmt](https://user-images.githubusercontent.com/48520821/86760903-c9564b00-c06f-11ea-883e-dd787445b5f0.png)
+
+### Design
+![credify_user_management](https://user-images.githubusercontent.com/48520821/86761185-fb67ad00-c06f-11ea-9bf4-7fb85cb29a60.png)
 
 ### Installing
 
