@@ -24,7 +24,7 @@
 <body>
 
 <div id="app">
-    <div v-if="signingIn === true">
+    <div v-if="signingIn === false">
         <div class="container d-flex text-center">
             <div class="col-sm-6 col-sm-offset-2" ><!-- col -->
                 <h2><h1>Enter Phone Number</h1></h2>
@@ -43,7 +43,7 @@
             </div>
         </div>
     </div>
-    <div v-else-if="finalStep === true">
+    <div v-else-if="finalStep === false">
         <div class="container d-flex text-center">
             <div class="row">
                     <h2><h1>Enter Verification Code</h1></h2>
@@ -206,6 +206,10 @@
             register () {
                 console.log("tam");
                 console.log( this.form);
+                console.log( "Do not support for now.");
+                console.log( "But you can get the firebase uid here");
+                console.log( "phone identifier is ", this.authUser.phoneNumber );
+                console.log( "firebase uid is ", this.authUser.uid );
             },
             getCountry: function ( { number, isValid, country } ) {
                 this.phone = number.significant;
@@ -269,6 +273,7 @@
                       const user = result.user;
                       vm.authUser = user;
                       console.log( user );
+                      vm.finalStep = true;
                   }).catch( function (error ) {
                       alert("The otp is incorrect, pleaser resend an OTP")
                   })
