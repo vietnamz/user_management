@@ -1,4 +1,4 @@
-exfrom flask_restplus import fields
+from flask_restplus import fields
 from api import api
 from flask_restplus import reqparse
 
