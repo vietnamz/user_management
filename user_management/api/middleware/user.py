@@ -90,6 +90,8 @@ def register_with_phone(header=None, form_data=None):
     if not firebase_user_obj:
         raise CustomException('The phone has not verified yet', '401', {'field': 'phone',
                                                                        'code': 'USR_02'})
+    if firebase_user_obj.uid:
+        db_object['firebase_uid'] = firebase_user_obj.uid
     """
     fields is created/set by system.
     user_uuid
@@ -108,9 +110,8 @@ def register_with_phone(header=None, form_data=None):
     db_object['country'] = form_data.get('country')
     db_object['province'] = form_data.get('province')
     db_object['city'] = form_data.get('city')
-    db_object['address_line'] = form_data['address_line']
-    db_object['postal_code'] = form_data['postal_code']
-    db_object['firebase_uid'] = form_data['firebase_uid']
+    db_object['address_line'] = form_data.get('address_line')
+    db_object['postal_code'] = form_data.get('postal_code')
     return Dal.create_user(**db_object)
 
 

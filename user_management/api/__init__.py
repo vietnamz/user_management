@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, url_for
 from flask_restplus import Api, Namespace
 from flask_sqlalchemy import SQLAlchemy
 
@@ -36,10 +36,23 @@ authorizations = {
         'name': 'Authorization'
     },
 }
-api = Api(app, api_version='1.1', doc='/docs', title='Backend API',
-          description='Official documentation about User API.',
-          contact='delgemoon', contact_email='delgemoon@gmail.com',
-          security='Bearer Auth', authorizations=authorizations)
+
+
+class CustomApi(Api):
+    @property
+    def specs_url(self):
+        '''
+        The Swagger specifications absolute url (ie. `swagger.json`)
+
+        :rtype: str
+        '''
+        return url_for(self.endpoint('specs'), _external=False)
+
+
+api = CustomApi(app, api_version='1.1', doc='/users/docs', prefix='/users', title='Backend API',
+                description='Official documentation about User API.',
+                contact='delgemoon', contact_email='delgemoon@gmail.com',
+                security='Bearer Auth', authorizations=authorizations)
 
 api.add_namespace(monitoring_namespace)
 api.add_namespace(user_namespace)
