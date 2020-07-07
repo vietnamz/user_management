@@ -19,6 +19,10 @@ config_name = os.getenv('APP_SETTINGS')
 
 app = Flask(__name__)
 CORS(app)
+app.config.from_object(app_config[config_name])
+app.config.from_pyfile('config.py')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['RESTPLUS_MASK_SWAGGER'] = False
 
 monitoring_namespace = Namespace(
     "monitoring",
@@ -26,7 +30,7 @@ monitoring_namespace = Namespace(
 )
 
 user_namespace = Namespace(
-    "users",
+    "api/v{}/user".format(app.config["VERSION_MAJOR"]),
     description='Everything about User'
 )
 authorizations = {
@@ -56,10 +60,6 @@ api = CustomApi(app, api_version='1.1', doc='/users/docs', prefix='/users', titl
 
 api.add_namespace(monitoring_namespace)
 api.add_namespace(user_namespace)
-app.config.from_object(app_config[config_name])
-app.config.from_pyfile('config.py')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['RESTPLUS_MASK_SWAGGER'] = False
 
 
 @api.errorhandler(CustomException)

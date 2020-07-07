@@ -12,6 +12,9 @@ class Config(object):
 class LocalConfig(Config):
     """Configuration for development on localhost"""
     DEBUG = True
+    VERSION_MAJOR = 1
+    VERSION_MINOR = 0
+    VERSION_PATCH = 0
 
 
 class TestingConfig(Config):
@@ -19,12 +22,18 @@ class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'postgresql://localhost/test_db'
     DEBUG = True
+    VERSION_MAJOR = 1
+    VERSION_MINOR = 0
+    VERSION_PATCH = 0
 
 
 class ProductionConfig(Config):
     """Production configuration values"""
     DEBUG = False
     TESTING = False
+    VERSION_MAJOR = 1
+    VERSION_MINOR = 0
+    VERSION_PATCH = 0
 
 
 app_config = {
