@@ -1,3 +1,7 @@
+"""
+integration test.
+"""
+
 import requests
 import atexit
 
@@ -5,22 +9,27 @@ from pact import Consumer, Provider
 from pytest import mark
 
 
-USER_MANAGEMENT = 'http://192.168.100.3:5001'
+USER_MANAGEMENT = 'http://localhost:5001'
 
 
-def get_user(user_uuid):
-    """Fetch the panel efficiency of a known inefficient panel"""
-    print("{}/users/{}".format(USER_MANAGEMENT, user_uuid))
+def get_users():
+    """Fetch all users"""
+    print("{}/users/api/v1/user/{}".format(USER_MANAGEMENT))
     return requests.get(
-        "{}/users/{}".format(USER_MANAGEMENT, user_uuid),
+        "{}/users/api/v1/user/{}".format(USER_MANAGEMENT),
         params=None,
         headers={'Content-Type': 'application/json'}
     ).json()
 
 
-pact = Consumer('User Management Service').has_pact_with(Provider('Service'), host_name="192.168.100.3", port=5000)
-pact.start_service()
-atexit.register(pact.stop_service)
+def get_user(user_uuid):
+    """Fetch a specific user"""
+    print("{}/users/api/v1/{}".format(USER_MANAGEMENT, user_uuid))
+    return requests.get(
+        "{}/users/api/v1/user".format(USER_MANAGEMENT),
+        params=None,
+        headers={'Content-Type': 'application/json'}
+    ).json()
 
 
 def test_user_creation():
@@ -50,17 +59,5 @@ def test_user_creation():
             "user_uuid": "3aa6d164-e287-4ce8-a759-694a1ba93dbc"
         }
 
-
-    pact.given(
-        'a url'
-    ).upon_receiving(
-        'a request for predefined user with user uuid 3aa6d164-e287-4ce8-a759-694a1ba93dbc'
-    ).with_request(
-         'get',
-         '/users/users/3aa6d164-e287-4ce8-a759-694a1ba93dbc'
-     ).will_respond_with(200)
-
-    pact.setup()
     result = get_user('3aa6d164-e287-4ce8-a759-694a1ba93dbc')
-    pact.verify()
     assert result == expected
