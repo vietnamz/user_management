@@ -55,6 +55,15 @@ $ sudo pip --version
 ```
 ### Local Development
 
+### Start local docker postgres SQL
+
+```bash
+cd user_management
+docker-compose up -d
+```
+## Note: Make sure you stop this docker instance named dev_postgres before running deployment.sh script, otherwise you will get the port conflict issue when running deployment.sh
+
+
 #### Activate virtualenv and install required python packages
 Being ensured that current working folder is root directory of "credify" repository.
 ```bash
@@ -106,6 +115,7 @@ pip install eralchemy
 eralchemy -i postgresql+psycopg2://postgres:postgres@localhost:5432/user_mgr -o erd_user_mgmt.png --exclude-tables alembic_version
 
 ```
+
 
 ### Development environment setup
 A step by step series of instructions that tell you how to get a development environment running.
