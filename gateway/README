@@ -1,0 +1,4 @@
+## Source structure
+
+src/main/resources
+    - add routes section in yml file to route the traffic

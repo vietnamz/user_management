@@ -1,10 +1,9 @@
-FROM python:3
+FROM python:3.7
 
 ADD requirements.txt /requirements.txt
 
-RUN apt-get update &&
-    && pyvenv /venv \
-    && /venv/bin/pip install -U pip \
+RUN apt-get update \
+    && python -m venv /venv \
     && LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "/venv/bin/pip install --no-cache-dir -r /requirements.txt"
 
 RUN mkdir /code/
@@ -13,6 +12,7 @@ ADD . /code/
 
 # Add any custom, static environment variables needed by Django or your settings file here:
 ENV FLASK_APP=app.py
-
-EXPOSE 5000
-ENTRYPOINT ["/venv/bin/flask", "run"]
+ENV APP_SETTINGS=local
+ENV DATABASE_URL="postgresql+psycopg2://postgres:postgres@localhost:5432/user_mgr"
+ENV FLASK_ENV=development
+ENV GOOGLE_APPLICATION_CREDENTIALS=firebase.json

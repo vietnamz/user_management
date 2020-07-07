@@ -82,6 +82,14 @@ def register_with_phone(header=None, form_data=None):
                                                                   'code': 'USR_03'})
 
     """
+    VALIDATION with firebase api
+    """
+    firebase_user_obj = get_user_by_phone_number( db_object['account'] )
+    print( firebase_user_obj )
+    if not firebase_user_obj:
+        raise CustomException('The phone has not verified yet', '401', {'field': 'phone',
+                                                                       'code': 'USR_02'})
+    """
     fields is created/set by system.
     user_uuid
     active

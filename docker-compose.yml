@@ -1,0 +1,60 @@
+version: '3.6'
+services:
+  #  Create a service named db.
+  postgres_db:
+    #   Use the Docker Image postgres. This will pull the newest release.
+    image: "postgres"
+    #   Give the container the name my_postgres. You can changes to something else.
+    container_name: "dev_postgres"
+    #   Setup the username, password, and database name. You can changes these values.
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=user_mgr
+    #   Maps port 54320 (localhost) to port 5432 on the container. You can change the ports to fix your needs.
+    ports:
+      - "5432:5432"
+    #   Set a volume some that database is not lost after shutting down the container.
+    #   I used the name postgres-data but you can changed it to something else.
+    volumes:
+      - database_data:/var/lib/mysql
+    restart: always
+    networks:
+      - credify-network
+  api-gateway:
+    image: api-gateway
+    ports:
+      - "5000:5000"
+    environment:
+    - SPRING_PROFILES_ACTIVE=qa
+    restart: always
+    networks:
+      - credify-network
+  user-mgmt-service:
+    image: user-mgmt-service
+    build:
+      context: ./user_management
+      dockerfile: Dockerfile
+    command: /bin/bash wait_to_start.sh
+    ports:
+      - "5001:5001"
+    environment:
+      - APP_SETTINGS=local
+      - DATABASE_URL="postgresql+psycopg2://postgres:postgres@postgres_db:5432/user_mgr?charset=utf8"
+      - FLASK_ENV=development
+      - GOOGLE_APPLICATION_CREDENTIALS=firebase.json
+      - WAIT_COMMAND=sleep 10000
+      - WAIT_START_CMD=/venv/bin/gunicorn --workers=1 --bind=0.0.0.0:5001 app:app
+      - WAIT_SLEEP=20
+      - WAIT_LOOPS=100
+    depends_on:
+      - postgres_db    
+    networks:
+      - credify-network
+    restart: always
+volumes:
+  database_data:
+    driver: local
+networks:
+  credify-network:
+    driver: bridge

@@ -10,7 +10,7 @@ def get_user_by_uid(uid):
     """
     user = auth.get_user(uid)
     if not user:
-        raise CustomException('The uid is invalid', '400', {'field': 'uid', 'code': 'USR_01'})
+        raise CustomException('The uid is invalid', '401', {'field': 'uid', 'code': 'USR_02'})
     return user
 
 
@@ -22,7 +22,7 @@ def get_user_by_phone_number( phone ):
     """
     user = auth.get_user_by_phone_number(phone)
     if not user:
-        raise CustomException('The phone is invalid', '400', {'field': 'phone', 'code': 'USR_01'})
+        raise CustomException('The phone is invalid', '401', {'field': 'phone', 'code': 'USR_02'})
     print('Successfully fetched user data: {0}'.format(user.uid))
     return user
 

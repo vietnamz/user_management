@@ -1,0 +1,33 @@
+zuul:
+    ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
+    routes:
+        users:
+            path: /users/**
+            url: http://localhost:5002/users
+server:
+     port: 5000
+
+application:
+    access_token: ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6VXhNaUo5LmV5SnBjM01pT2lKRGIyNXVaV04wYjIxbElpd2lhV0YwSWpveE5UWTVOVGMxTVRBMkxDSmxlSEFpT2pFMk1ERXhNVEV4TURZc0ltRjFaQ0k2SW5kM2R5NWpiMjV1WldOMGIyMWxMbVJsYzJsbmJpSXNJbk4xWWlJNkltWmhkR0ZzUUdOdmJtNWxZM1J2YldVdVpHVnphV2R1SWl3aVIybDJaVzVPWVcxbElqb2lWR0Z0SWl3aVUzVnlibUZ0WlNJNklrUmhibWNpTENKRmJXRnBiQ0k2SW5SaGJXUnRRR1F0YzI5bWRDNWpiMjB1ZG00aUxDSlNiMnhsSWpvaVJHVjJaV3h2Y0dWeUluMC5FUFFBcExiY0pIZUJLdklwd2w0dEpDX1pCb0s2VXVZR0JMR3VDeEJCdnBRcnZ3eFZFVEgzOU1SbXpiSlRJclpwZV9QWThMZ3dlTGwta25pcGdydWVaUQ
+    auth_type: bearer
+
+---
+
+spring:
+    profiles: qa
+    servlet:
+        multipart:
+            max-file-size: 110MB
+            max-request-size: 110MB
+zuul:
+    ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
+    routes:
+        users:
+            path: /users/**
+            url: http://user-mgmt-service:5001/users
+server:
+     port: 5000
+
+application:
+    access_token: ZXlKMGVYQWlPaUpLVjFRaUxDSmhiR2NpT2lKSVV6VXhNaUo5LmV5SnBjM01pT2lKRGIyNXVaV04wYjIxbElpd2lhV0YwSWpveE5UWTVOVGMxTVRBMkxDSmxlSEFpT2pFMk1ERXhNVEV4TURZc0ltRjFaQ0k2SW5kM2R5NWpiMjV1WldOMGIyMWxMbVJsYzJsbmJpSXNJbk4xWWlJNkltWmhkR0ZzUUdOdmJtNWxZM1J2YldVdVpHVnphV2R1SWl3aVIybDJaVzVPWVcxbElqb2lWR0Z0SWl3aVUzVnlibUZ0WlNJNklrUmhibWNpTENKRmJXRnBiQ0k2SW5SaGJXUnRRR1F0YzI5bWRDNWpiMjB1ZG00aUxDSlNiMnhsSWpvaVJHVjJaV3h2Y0dWeUluMC5FUFFBcExiY0pIZUJLdklwd2w0dEpDX1pCb0s2VXVZR0JMR3VDeEJCdnBRcnZ3eFZFVEgzOU1SbXpiSlRJclpwZV9QWThMZ3dlTGwta25pcGdydWVaUQ
+    auth_type: bearer
