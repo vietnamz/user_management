@@ -103,6 +103,7 @@ class UserWithUUID(Resource):
         """
         Delete a specific user information base backend user uuid
         """
+        print(user_uuid)
         delete_user(user_uuid)
         return jsonify({'status': 'OK'})
 

@@ -19,9 +19,9 @@ build_gateway()
 
 build_sql() 
 {
-	docker-compose -f docker-compose.yml rm -s -v -f mysql-db
-	docker-compose -f docker-compose.yml build mysql-db
-	docker-compose -f docker-compose.yml up -d --force-recreate mysql-db
+	docker-compose -f docker-compose.yml rm -s -v -f postgres_db
+	docker-compose -f docker-compose.yml build postgres_db
+	docker-compose -f docker-compose.yml up -d --force-recreate postgres_db
 }
 
 create_env () {

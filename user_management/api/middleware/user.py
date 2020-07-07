@@ -85,7 +85,8 @@ def register_with_phone(header=None, form_data=None):
     VALIDATION with firebase api
     """
     firebase_user_obj = get_user_by_phone_number( db_object['account'] )
-    print( firebase_user_obj )
+    print( firebase_user_obj.uid )
+    print( firebase_user_obj.phone_number)
     if not firebase_user_obj:
         raise CustomException('The phone has not verified yet', '401', {'field': 'phone',
                                                                        'code': 'USR_02'})
@@ -102,11 +103,11 @@ def register_with_phone(header=None, form_data=None):
     """
     optional fields.
     """
-    db_object['first_name'] = form_data['first_name']
-    db_object['last_name'] = form_data['last_name']
-    db_object['country'] = form_data['country']
-    db_object['province'] = form_data['province']
-    db_object['city'] = form_data['city']
+    db_object['first_name'] = form_data.get('first_name')
+    db_object['last_name'] = form_data.get('last_name')
+    db_object['country'] = form_data.get('country')
+    db_object['province'] = form_data.get('province')
+    db_object['city'] = form_data.get('city')
     db_object['address_line'] = form_data['address_line']
     db_object['postal_code'] = form_data['postal_code']
     db_object['firebase_uid'] = form_data['firebase_uid']

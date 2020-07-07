@@ -5,7 +5,7 @@ services:
     #   Use the Docker Image postgres. This will pull the newest release.
     image: "postgres"
     #   Give the container the name my_postgres. You can changes to something else.
-    container_name: "dev_postgres"
+    container_name: "local_postgres"
     #   Setup the username, password, and database name. You can changes these values.
     environment:
       - POSTGRES_USER=postgres

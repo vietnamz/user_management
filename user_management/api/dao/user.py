@@ -1,4 +1,4 @@
-from flask_restplus import fields
+exfrom flask_restplus import fields
 from api import api
 from flask_restplus import reqparse
 
@@ -14,8 +14,7 @@ user = api.model('schema', {
     'last_name': fields.String(description='The user given name', example='Dang'),
     'user_note': fields.String(description='The user note', example='This is a admin user'),
     'credit_card': fields.String(description='The user credit card', example='xxxxxxxxxxx'),
-    'address_1': fields.String(description='The first address of user', example='Sai gon'),
-    'address_2': fields.String(description='The second address of user', example='Truong Chinh'),
+    'address_line': fields.String(description='The address of user', example='Sai gon'),
     'city': fields.String(description='the user city', example='Sai Gon'),
     'province': fields.String(description='The province of user coutry', example='Asia'),
     'postal_code': fields.String(description='The postal code', example=''),
